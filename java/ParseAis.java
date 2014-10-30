@@ -17,7 +17,6 @@ import eok.database.DatabasePG;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 
 /**
@@ -158,7 +157,7 @@ public class ParseAis {
 		     };
 		 
 		       saxParser.parse(filename, handler);
-		 
+//		 
 
 		       
 		     } catch (Exception e) {
