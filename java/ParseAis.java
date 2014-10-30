@@ -44,7 +44,7 @@ public class ParseAis {
 	static String currentTable;
 	static int rows;
 	static DatabasePG db;
-	public static void test(String[] args) {
+	public static void main(String[] args) {
 		
 		//uniqueImos = new ArrayList<Double>();
 
@@ -57,7 +57,7 @@ public class ParseAis {
 		 //String outputPath = "//Users/ucfteoo/Documents/ExactEarth/aug_sep_uniq_imos.csv";
 		  //String path = "C:/Users/transport_group/Documents/ExactEarth/01072010_31122010/";
 		//	String path = "C:/Users/transport_group/Documents/ExactEarth/01012012_30062012/";
-			String path = "C:/Users/transport_group/Documents/DataBackUp/ExactEarth/2012/20120801_20120807.zip/20120801_20120807";
+			String path = "C:/Users/transport_group/Documents/DataBackUp/ExactEarth/2012/";
 			String files;
 		  File folder = new File(path);
 		  File[] listOfFiles = folder.listFiles(); 
