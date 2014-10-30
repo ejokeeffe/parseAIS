@@ -19,7 +19,7 @@ public class AISMessageLight {
     public Integer draught_indx;
     public Integer msg_type_indx; 
     
-    public void AisMessageLight(){
+    public AISMessageLight(){
   
     	//Manually set the indexes
     	mmsi_indx=0;
