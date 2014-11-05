@@ -84,7 +84,7 @@ public class ParseAis {
 				aisFolder = new File(path + Z + listOfFiles[i].getName());
 				aisFolderName = aisFolder.getAbsolutePath().replace(".zip", "");
 				aisFolder = new File(aisFolderName);
-				//extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
+				extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
 				//get the list of files in the folder that we've just unzipped
 				File[] aisFiles = aisFolder.listFiles();
 				//if the size of aisFiles is 1, then we've unzipped to a nested folder so jump into that
@@ -647,7 +647,7 @@ public class ParseAis {
 
 			sqlStr = sqlStr + ParseAis.ais.get(i).getSql("\"" + table + "\"");
 			if (i%insertGroup == 0){
-				System.out.println(i);
+				//System.out.println(i);
 				//run sql insert
 				db.executeStatement(sqlStr);
 				sqlStr = "";
