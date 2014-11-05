@@ -84,7 +84,7 @@ public class ParseAis {
 				aisFolder = new File(path + Z + listOfFiles[i].getName());
 				aisFolderName = aisFolder.getAbsolutePath().replace(".zip", "");
 				aisFolder = new File(aisFolderName);
-				extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
+				//extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
 				//get the list of files in the folder that we've just unzipped
 				File[] aisFiles = aisFolder.listFiles();
 				//if the size of aisFiles is 1, then we've unzipped to a nested folder so jump into that
@@ -501,7 +501,7 @@ public class ParseAis {
 				//message type
 				try{
 					newAis.msg_type = ParseAis.getInternalValue(Double.class, entry, newAis.msg_type_indx);
-					if (newAis.msg_type>1000){
+					if (Math.abs(newAis.msg_type)>1000){
 						newAis.msg_type=-1.0;
 					}
 				}catch(Exception e){
@@ -566,7 +566,7 @@ public class ParseAis {
 				//nav status
 				try{
 					newAis.nav_status = ParseAis.getInternalValue(Double.class, entry, newAis.nav_status_indx);
-					if (newAis.nav_status>1000){
+					if (Math.abs(newAis.nav_status)>1000){
 						newAis.nav_status=-1.0;
 					}
 				}catch(Exception e){
@@ -610,11 +610,17 @@ public class ParseAis {
 	 * @param indx
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> T getInternalValue(Class<T> returnClass,String[] row,int indx){
 		//First check if that indx exists
 		if(row.length>indx){
 			if (returnClass.getCanonicalName()=="java.lang.String"){
-				return (T) row[indx];
+				String str = row[indx];
+				//Trim to 255 to allow input into database
+				if (str.length()>255){
+					str=str.substring(0, 254);
+				}
+				return (T) str;
 			}//if
 			if (!row[indx].replace("\"", "").equals("")){
 				if(!row[indx].replace("\"", "").toUpperCase().equals("NONE")){
@@ -635,13 +641,13 @@ public class ParseAis {
 	private static void writeMessagesToDB(String table){
 
 		//Loop through the messages and package it into groups of insert statements
-		double insertGroup = 1000;
+		double insertGroup = 2000;
 		String sqlStr = "";
 		for (int i=0;i<ParseAis.ais.size();i++){
 
 			sqlStr = sqlStr + ParseAis.ais.get(i).getSql("\"" + table + "\"");
 			if (i%insertGroup == 0){
-				//System.out.println(i);
+				System.out.println(i);
 				//run sql insert
 				db.executeStatement(sqlStr);
 				sqlStr = "";
