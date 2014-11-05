@@ -84,7 +84,7 @@ public class ParseAis {
 				aisFolder = new File(path + Z + listOfFiles[i].getName());
 				aisFolderName = aisFolder.getAbsolutePath().replace(".zip", "");
 				aisFolder = new File(aisFolderName);
-				//extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
+				extractZip(listOfFiles[i].getAbsolutePath(),aisFolderName);
 				//get the list of files in the folder that we've just unzipped
 				File[] aisFiles = aisFolder.listFiles();
 				//if the size of aisFiles is 1, then we've unzipped to a nested folder so jump into that
@@ -484,14 +484,14 @@ public class ParseAis {
 					if (Double.isInfinite(Math.abs(newAis.mmsi))){
 						newAis.mmsi=-1.0;
 					}
-					}
+				}
 				//imo
 				newAis.imo = ParseAis.getInternalValue(Double.class, entry, newAis.imo_indx);
 				if (newAis.imo!=null){
 					if (Double.isInfinite(Math.abs(newAis.imo))){
 						newAis.imo=null;
 					}
-					}
+				}
 				//date_time
 				newAis.date_time = ParseAis.getInternalValue(String.class, entry, newAis.date_time_indx);
 
@@ -500,7 +500,10 @@ public class ParseAis {
 
 				//message type
 				try{
-				newAis.msg_type = Math.min(ParseAis.getInternalValue(Double.class, entry, newAis.msg_type_indx),-1);
+					newAis.msg_type = ParseAis.getInternalValue(Double.class, entry, newAis.msg_type_indx);
+					if (newAis.msg_type>1000){
+						newAis.msg_type=-1.0;
+					}
 				}catch(Exception e){
 					newAis.msg_type= -1.0;
 				}
@@ -517,20 +520,20 @@ public class ParseAis {
 					if (Double.isInfinite(Math.abs(newAis.sog))){
 						newAis.sog=-1.0;
 					}
-					}
+				}
 				//long
 				newAis.lon = ParseAis.getInternalValue(Double.class, entry, newAis.lon_indx);
 				if (newAis.lon!=null){
-				if (Math.abs(newAis.lon)>300){
-					newAis.lon=500.0;
-				}
+					if (Math.abs(newAis.lon)>300){
+						newAis.lon=500.0;
+					}
 				}
 				//lat
 				newAis.lat = ParseAis.getInternalValue(Double.class, entry, newAis.lat_indx);
 				if (newAis.lat!=null){
-				if (Math.abs(newAis.lat)>300){
-					newAis.lat=500.0;
-				}
+					if (Math.abs(newAis.lat)>300){
+						newAis.lat=500.0;
+					}
 				}
 				//cog
 				newAis.course = ParseAis.getInternalValue(Double.class, entry, newAis.course_indx);
@@ -538,14 +541,14 @@ public class ParseAis {
 					if (Math.abs(newAis.course)>1e9){
 						newAis.course=null;
 					}
-					}
+				}
 				//heading
 				newAis.heading = ParseAis.getInternalValue(Double.class, entry, newAis.heading_indx);
 				if (newAis.heading!=null){
 					if (Math.abs(newAis.heading)>1e9){
 						newAis.heading=null;
 					}
-					}
+				}
 				//eta_month
 				newAis.eta_month = ParseAis.getInternalValue(Double.class, entry, newAis.eta_month_indx);
 				//if (!entry[newAis.eta_month_indx].replace("\"", "").equals("")){
@@ -562,10 +565,13 @@ public class ParseAis {
 
 				//nav status
 				try{
-				newAis.nav_status = Math.min(ParseAis.getInternalValue(Double.class, entry, newAis.nav_status_indx),-1);
-			}catch(Exception e){
-				newAis.nav_status= -1.0;
-			}
+					newAis.nav_status = ParseAis.getInternalValue(Double.class, entry, newAis.nav_status_indx);
+					if (newAis.nav_status>1000){
+						newAis.nav_status=-1.0;
+					}
+				}catch(Exception e){
+					newAis.nav_status= -1.0;
+				}
 
 
 				counter +=1;
@@ -632,7 +638,7 @@ public class ParseAis {
 		double insertGroup = 1000;
 		String sqlStr = "";
 		for (int i=0;i<ParseAis.ais.size();i++){
-			
+
 			sqlStr = sqlStr + ParseAis.ais.get(i).getSql("\"" + table + "\"");
 			if (i%insertGroup == 0){
 				//System.out.println(i);
