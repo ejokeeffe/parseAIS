@@ -327,7 +327,7 @@ public class ParseSAISMess5 {
 				if (qName.equalsIgnoreCase("aismessage")){
 
 					//create new ais object and add to the arraylist
-					AisMessage newAis = new AisMessage();
+					AisMessage newAis = new AisMessage("ExactEarth");
 					ParseSAISMess5.ais.add(newAis);
 					ParseSAISMess5.rows+=1;
 					counter +=1;

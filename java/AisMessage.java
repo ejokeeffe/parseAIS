@@ -27,9 +27,10 @@ public class AisMessage extends AISMessageLight {
    
     public Integer destination_indx;
     
-    public AisMessage(){
+    public AisMessage(String ais_source){
     	//
     	super();
+    	if (ais_source.equalsIgnoreCase("ExactEarth")){
     	//Manually set the indexes
     	date_time_indx=3;
     	nav_status_indx=24;
@@ -45,7 +46,25 @@ public class AisMessage extends AISMessageLight {
         eta_minute_indx=48;
         draught_indx=21;
         destination_indx=22;
+    	}else if(ais_source.equalsIgnoreCase("VesselTracker")){
+    		date_time_indx=6;
+    		vessel_name_indx=0;
+            mmsi_indx=2;
+        	imo_indx=1;
+        	lon_indx=7;
+            lat_indx=8;
+            sog_indx=9;
+            course_indx=10;
+            heading_indx=11;
+            draught_indx=12;
+            destination_indx=-1;
+            eta_month_indx=-1;
+            eta_day_indx=-1;
+            eta_hour_indx=-1;
+            eta_minute_indx=-1;
+    	}
     }//constructor
+    
     
     public String getSql(String table){
     	String sql = "insert into " + table + " (";

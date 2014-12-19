@@ -57,6 +57,7 @@ public class ParseAis {
 	static DatabasePG db;
 	static HashMap<String, HashMap<Integer, ArrayList<String[]>>> mmsiMessages;
 	static String current_ais_filename;
+	static String ais_source;
 	public static void main(String[] args) {
 
 		//uniqueImos = new ArrayList<Double>();
@@ -70,7 +71,12 @@ public class ParseAis {
 		//String outputPath = "//Users/ucfteoo/Documents/ExactEarth/aug_sep_uniq_imos.csv";
 		//String path = "C:/Users/transport_group/Documents/ExactEarth/01072010_31122010/";
 		//	String path = "C:/Users/transport_group/Documents/ExactEarth/01012012_30062012/";
-		String path = "C:/Users/transport_group/Documents/DataBackUp/ExactEarth/2012/";
+		String path = "C:/Users/transport_group/Documents/DataBackUp/ExactEarth/2013/";
+		ais_source="ExactEarth";
+		
+		path= "C:/Users/transport_group/Documents/DataBackUp/VesselTracker";
+		ais_source="VesselTracker";
+		
 		String files;
 		File folder = new File(path);
 		File[] listOfFiles = folder.listFiles(); 
@@ -107,7 +113,9 @@ public class ParseAis {
 						files = current_ais_filename;
 						System.out.println(files);
 						int offset=0;
-						if (current_ais_filename.substring(current_ais_filename.length()-6, current_ais_filename.length()-5)=="_"){
+						
+						if (ais_source.equalsIgnoreCase("ExactEarth")){
+						if (current_ais_filename.substring(current_ais_filename.length()-6, current_ais_filename.length()-5).equalsIgnoreCase("_")){
 							offset=2;
 						}
 						String mon = current_ais_filename.toString().replace("-",
@@ -139,6 +147,19 @@ public class ParseAis {
 							ParseAis.writeMessagesToDB(listOfFiles[i].getName());
 
 						}//elif
+						}else if(ais_source.equalsIgnoreCase("VesselTracker")){
+							String yr = current_ais_filename.toString().substring(4, 8);
+							String mon = current_ais_filename.toString().substring(9,11);
+							ParseAis.currentTable = "AIS_VT_" + yr + "_"+ mon + "_SelRaw";
+							ais = new ArrayList<AisMessage>();
+							//set the number of rows to 0
+							ParseAis.rows =0;
+							//first parse the csv file
+							ParseAis.importCsvToPostgres(aisFiles[ii].getAbsolutePath());
+							//Now write the messages to file
+							//Even though loads have already been written, this should do the final bunch
+							ParseAis.writeMessagesToDB(listOfFiles[i].getName());
+						}
 					}//if
 				}//for ii
 				//Delete unzipped folder
@@ -285,7 +306,7 @@ public class ParseAis {
 						}//if
 
 						//create new ais object and add to the arraylist
-						AisMessage newAis = new AisMessage();
+						AisMessage newAis = new AisMessage(ais_source);
 						ParseAis.ais.add(newAis);
 						ParseAis.rows+=1;
 						counter +=1;
@@ -473,7 +494,7 @@ public class ParseAis {
 				}//if
 
 				//create new ais object and add to the arraylist
-				AisMessage newAis = new AisMessage();
+				AisMessage newAis = new AisMessage(ais_source);
 				ParseAis.ais.add(newAis);
 				ParseAis.rows+=1;
 
@@ -615,13 +636,22 @@ public class ParseAis {
 		//First check if that indx exists
 		if(row.length>indx){
 			if (returnClass.getCanonicalName()=="java.lang.String"){
-				String str = row[indx];
+				if (indx==-1){
+					return (T) "";
+				}
+				//Remove double quotes
+				String str = row[indx].replace("\"", "");
+				
+				
 				//Trim to 255 to allow input into database
 				if (str.length()>255){
 					str=str.substring(0, 254);
 				}
 				return (T) str;
 			}//if
+			if (indx==-1){
+				return null;
+			}
 			if (!row[indx].replace("\"", "").equals("")){
 				if(!row[indx].replace("\"", "").toUpperCase().equals("NONE")){
 					Double res;
