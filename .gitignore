@@ -1,3 +1,6 @@
+# Individual files
+config.properties
+
 *.class
 
 # Mobile Tools for Java (J2ME)
